@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>YouTube AI Filter</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="head">
+      <h1>YouTube AI Filter</h1>
+      <p id="statusBanner" class="status" hidden>
+        <span class="status-dot"></span><span id="statusText"></span>
+      </p>
+    </header>
+
+    <div class="row row-tight">
+      <span class="row-label">Enable filter</span>
+      <label class="switch">
+        <input type="checkbox" id="filterToggle" aria-label="Filter enabled" />
+        <span class="switch-track"><span class="switch-thumb"></span></span>
+      </label>
+    </div>
+
+    <p class="count-line">
+      <strong id="totalCount">0</strong> hidden this session
+      <span class="count-split">(<span id="apiCount">0</span> API · <span id="scanCount">0</span> scan)</span>
+    </p>
+
+    <div class="list">
+      <div class="item">
+        <div class="item-top">
+          <span class="item-label">API check <span class="tag">Pass 1</span></span>
+          <label class="switch">
+            <input type="checkbox" id="pass1Toggle" aria-label="Pass 1 — API disclosure check enabled" />
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </label>
+        </div>
+        <p class="item-desc">Creator-disclosed synthetic content, via YouTube's API.</p>
+        <details class="more">
+          <summary>Details</summary>
+          <p>
+            Batched calls to the YouTube Data API (up to 50 IDs per request,
+            ~1 quota unit per call). Catches self-disclosure only — not
+            YouTube's automatic AI-detection label.
+          </p>
+        </details>
+      </div>
+
+      <div class="item">
+        <div class="item-top">
+          <span class="item-label">Auto-detect scan <span class="tag">Pass 2</span></span>
+        </div>
+        <p class="item-desc">Scans watch pages for YouTube's automatic AI label.</p>
+        <div class="segmented" id="scanIntensityGroup" role="radiogroup" aria-label="Scan intensity">
+          <button type="button" role="radio" aria-checked="false" data-value="off">Off</button>
+          <button type="button" role="radio" aria-checked="false" data-value="normal">Normal</button>
+          <button type="button" role="radio" aria-checked="false" data-value="thorough">Thorough</button>
+        </div>
+        <details class="more">
+          <summary>Details</summary>
+          <p>
+            Runs only for cards you scroll to, one at a time. A hit hides
+            the video too, same as Pass 1. "Off" disables this pass —
+            only the API check above still runs.
+          </p>
+        </details>
+      </div>
+
+      <div class="item">
+        <div class="item-top">
+          <span class="item-label">Community channel flags</span>
+          <label class="switch">
+            <input type="checkbox" id="channelBadgeToggle" aria-label="Community channel flags enabled" />
+            <span class="switch-track"><span class="switch-thumb"></span></span>
+          </label>
+        </div>
+        <p class="item-desc">Badges channels flagged by AiSList. Never hides — badge only.</p>
+        <p class="meta" id="channelListMeta"></p>
+        <details class="more">
+          <summary>Details</summary>
+          <p>
+            A crowd judgment, not YouTube's own — can be wrong or stale.
+            That's why it only ever adds a small badge, never hides
+            anything.
+          </p>
+          <p class="attribution">
+            List: <a href="https://github.com/Override92/AiSList" target="_blank" rel="noopener">AiSList</a>
+            by Override92, CC BY-NC 4.0.
+          </p>
+        </details>
+      </div>
+
+      <div class="item">
+        <div class="item-top">
+          <span class="item-label">Hide mode</span>
+        </div>
+        <p class="item-desc">How a flagged video's card is hidden.</p>
+        <div class="segmented" id="hideModeGroup" role="radiogroup" aria-label="Hide mode">
+          <button type="button" role="radio" aria-checked="false" data-value="remove">Remove</button>
+          <button type="button" role="radio" aria-checked="false" data-value="overlay">Label</button>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-top">
+          <span class="item-label">API key</span>
+          <span id="keyStatus" class="key-status"></span>
+        </div>
+        <div class="key-row">
+          <input type="password" id="apiKeyInput" placeholder="AIza..." autocomplete="off" spellcheck="false" />
+          <button id="saveKeyButton" class="btn">Save</button>
+        </div>
+        <p class="item-desc">Free from Google Cloud — takes about a minute.</p>
+        <a
+          id="keyGuideLink"
+          class="btn btn-outline btn-block"
+          href="api-key-guide.html"
+          target="_blank"
+          rel="noopener"
+          >Show me how →</a
+        >
+      </div>
+    </div>
+
+    <footer class="foot"><span id="versionTag"></span></footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

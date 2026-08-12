@@ -1,0 +1,435 @@
+/* Chrome auto-sizes an extension popup from the document's intrinsic width,
+   so a definite width has to be pinned on `html` as well as `body` — with
+   only `body` constrained, the popup can render far wider than the content.
+   `box-sizing: border-box` everywhere keeps that one number honest: padding
+   no longer adds to it.
+
+   Flat, hairline-divided list — no cards, no shadows. "On"/"selected" states
+   are solid ink fills (var(--text) on var(--bg), inverted), not a brand
+   color. Color is reserved for the two states where it's actually
+   informative: warning and error. */
+
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #ffffff;
+  --text: #18181a;
+  --muted: #7c7f84;
+  --border: #e6e6e6;
+  --hover: #f5f5f5;
+  --invert: #ffffff;
+  --warn: #8a6d2f;
+  --danger: #a8443a;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #18181a;
+    --text: #ececec;
+    --muted: #8d9095;
+    --border: #2b2b2e;
+    --hover: #222225;
+    --invert: #18181a;
+    --warn: #d1ab66;
+    --danger: #d68f83;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+html,
+body {
+  width: 300px;
+}
+
+body {
+  margin: 0;
+  padding: 10px 12px 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 1px;
+}
+
+/* ---------- header ---------- */
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+
+.head h1 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* `[hidden]` has the same specificity as `.status` above; without this rule
+   the flex display here would win over the UA stylesheet's display:none,
+   showing an empty dot before JS ever calls setBanner(). */
+.status[hidden] {
+  display: none;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text);
+}
+
+.status.warning .status-dot {
+  background: var(--warn);
+}
+
+.status.error .status-dot {
+  background: var(--danger);
+}
+
+/* ---------- rows ---------- */
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.row-tight {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.row-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.count-line {
+  margin: 0;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.count-line strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.count-split {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* ---------- switches (compact) ---------- */
+
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.switch-track {
+  width: 26px;
+  height: 15px;
+  border-radius: 999px;
+  background: var(--border);
+  transition: background 0.12s ease;
+}
+
+.switch-thumb {
+  display: block;
+  width: 11px;
+  height: 11px;
+  margin: 2px;
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--border);
+  transition: transform 0.12s ease;
+}
+
+.switch input:checked + .switch-track {
+  background: var(--text);
+}
+
+.switch input:checked + .switch-track .switch-thumb {
+  transform: translateX(11px);
+  box-shadow: none;
+}
+
+.switch input:focus-visible + .switch-track {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+/* ---------- item list ---------- */
+
+.list {
+  margin-bottom: 2px;
+}
+
+.item {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.item-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tag {
+  margin-left: 4px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.item-desc {
+  margin: 0 0 5px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.item-desc a {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.meta {
+  margin: -2px 0 5px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+/* ---------- segmented control (compact) ---------- */
+
+.segmented {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.segmented button {
+  flex: 1;
+  padding: 4px 2px;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font);
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.segmented button:last-child {
+  border-right: none;
+}
+
+.segmented button:hover {
+  background: var(--hover);
+}
+
+.segmented button[aria-checked="true"] {
+  background: var(--text);
+  color: var(--invert);
+}
+
+.segmented button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+
+/* ---------- details ---------- */
+
+.more {
+  font-size: 10.5px;
+}
+
+.more summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 600;
+  list-style: none;
+}
+
+.more summary::-webkit-details-marker {
+  display: none;
+}
+
+.more summary::before {
+  content: "›";
+  display: inline-block;
+  margin-right: 3px;
+}
+
+.more[open] summary::before {
+  content: "⌄";
+}
+
+.more summary:hover {
+  color: var(--text);
+}
+
+.more p {
+  margin: 4px 0 0;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.more ol {
+  margin: 4px 0 0;
+  padding-left: 15px;
+  color: var(--muted);
+}
+
+.more li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.attribution {
+  margin-top: 4px;
+  font-size: 9.5px;
+}
+
+/* ---------- key row ---------- */
+
+.key-status {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.key-status.saved {
+  color: var(--text);
+}
+
+.key-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+input[type="password"] {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 7px;
+  font-size: 11px;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+
+input[type="password"]:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 1px;
+}
+
+input[type="password"]::placeholder {
+  color: var(--muted);
+}
+
+.btn {
+  padding: 5px 11px;
+  border: none;
+  border-radius: 5px;
+  background: var(--text);
+  color: var(--invert);
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  background: var(--hover);
+  opacity: 1;
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+/* ---------- footer ---------- */
+
+.foot {
+  padding-top: 6px;
+  text-align: right;
+  font-size: 9px;
+  color: var(--muted);
+  opacity: 0.7;
+}

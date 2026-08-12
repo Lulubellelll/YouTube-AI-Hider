@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Get a YouTube Data API key — YouTube AI Filter</title>
+    <link rel="stylesheet" href="api-key-guide.css" />
+  </head>
+  <body>
+    <main>
+      <header class="head">
+        <img src="icons/icon128.png" alt="" />
+        <div>
+          <h1>YouTube AI Filter</h1>
+          <p>Getting a free YouTube Data API key</p>
+        </div>
+      </header>
+
+      <p class="intro">
+        <strong>Pass 1</strong> (creator self-disclosure) checks video status
+        through YouTube's own Data API, which requires a free API key tied to
+        a Google Cloud project. The key never leaves your browser — it's
+        stored in <code>chrome.storage.local</code> and used only to call
+        <code>googleapis.com</code> directly from the extension.
+      </p>
+
+      <div class="fastpath">
+        <span class="fastpath-icon">⚡</span>
+        <div class="fastpath-body">
+          <p><strong>Fastest path:</strong> Google's credentials wizard pre-selects everything below for you.</p>
+          <p class="fastpath-desc">
+            It asks what you're calling and from where, then hands you an API key directly —
+            skips the manual "Create Credentials" menu in step 2.
+          </p>
+          <a
+            class="btn"
+            href="https://console.cloud.google.com/apis/credentials/wizard?api=youtube.googleapis.com"
+            target="_blank"
+            rel="noopener"
+            >Open the guided wizard →</a
+          >
+        </div>
+      </div>
+
+      <h2>Or, step by step</h2>
+      <ol class="steps">
+        <li class="step">
+          <span class="step-num"></span>
+          <div class="step-body">
+            <h3>Create a project and enable the API</h3>
+            <p>
+              Google's setup flow creates a Google Cloud project and turns on
+              the YouTube Data API v3 for it in one click — no manual
+              configuration needed.
+            </p>
+            <a
+              class="step-link"
+              href="https://console.cloud.google.com/flows/enableapi?apiid=youtube.googleapis.com"
+              target="_blank"
+              rel="noopener"
+              >Open the API setup wizard →</a
+            >
+            <p class="step-hint">
+              Choose "Create a new project" if asked. Any project name is
+              fine — it's just a container Google uses to track your API
+              usage and quota.
+            </p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num"></span>
+          <div class="step-body">
+            <h3>Create an API key</h3>
+            <p>
+              In the Credentials page, click <strong>+ Create Credentials</strong>
+              at the top, then choose <strong>API key</strong> from the dropdown.
+              Google generates one instantly — no form to fill in.
+            </p>
+            <a
+              class="step-link"
+              href="https://console.cloud.google.com/apis/credentials"
+              target="_blank"
+              rel="noopener"
+              >Open Credentials →</a
+            >
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-num"></span>
+          <div class="step-body">
+            <h3>Copy it into the extension</h3>
+            <p>
+              Click the copy icon next to the new key, then paste it into the
+              <strong>API key</strong> field in the extension's popup and
+              click <strong>Save</strong>. That's it — Pass 1 starts working
+              on the next check.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="notice">
+        <span class="notice-dot"></span>
+        <p>
+          No credit card is required for this. The YouTube Data API's free
+          quota (10,000 units/day — a batched status check costs about 1 unit
+          regardless of how many videos are in it) is far more than normal
+          browsing uses. Google may still prompt you to "enable billing" on
+          the project as a formality for some accounts; you can decline or
+          skip it and the key keeps working within the free quota.
+        </p>
+      </div>
+
+      <h2>Questions</h2>
+      <div class="faq">
+        <details class="faq-item">
+          <summary>Why doesn't the extension just get the key for me?</summary>
+          <p>
+            Doing that automatically would mean asking you to sign in to
+            Google through the extension and grant it broad Cloud Platform
+            permissions — enough to create projects and provision credentials
+            on your account. That's a much bigger ask than a filter extension
+            should need, and it's the kind of permission that's genuinely
+            worth being cautious about. Copy-pasting one key takes under a
+            minute and keeps the extension's access to exactly one thing:
+            reading public video status.
+          </p>
+        </details>
+        <details class="faq-item">
+          <summary>Is this safe to leave without a key?</summary>
+          <p>
+            Yes. Without a key, Pass 1 (self-disclosure) just stays off — the
+            extension still runs Pass 2 (the watch-page auto-detect scan) if
+            it's enabled, and the popup shows a status banner when a key is
+            missing so you know it's off, not silently broken.
+          </p>
+        </details>
+        <details class="faq-item">
+          <summary>What if I hit the daily quota?</summary>
+          <p>
+            The extension backs off automatically and shows the reset time in
+            the popup. Pass 2 keeps working in the meantime, since it doesn't
+            use this API key at all.
+          </p>
+        </details>
+        <details class="faq-item">
+          <summary>Can I revoke or rotate the key later?</summary>
+          <p>
+            Yes — delete or regenerate it any time from the same
+            <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Credentials page</a>,
+            then paste the new one into the popup. The old one stops working
+            immediately.
+          </p>
+        </details>
+      </div>
+
+      <p class="foot">
+        <span>You can close this tab and return to the extension popup.</span>
+      </p>
+    </main>
+  </body>
+</html>

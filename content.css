@@ -1,0 +1,130 @@
+/* "remove" hide mode. Deliberately CSS, not card.remove(): detaching the
+   element loses to YouTube's own renderer, which still owns the card and
+   can re-stamp it, and it silently no-ops whenever the card happens to be
+   momentarily detached when the verdict arrives (the element is gone, so
+   there is nothing to remove and nothing to retry). A class survives both
+   — it still applies if the element is detached and later re-attached.
+   display:none takes the card out of grid layout exactly as removal did,
+   so the visible result is unchanged. */
+.ytaif-removed {
+  display: none !important;
+}
+
+/* BUG B FIX: the card's own DOM (and therefore YouTube's own grid sizing)
+   is never touched. We only ensure the thumbnail container has a
+   positioning context, then overlay it in place — the container's own
+   `overflow: hidden` + rounded corners (confirmed on the live homepage
+   layout) clip the overlay to match automatically. Only used in "overlay"
+   hide mode. */
+.ytaif-thumb-container {
+  position: relative !important;
+}
+
+.ytaif-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(15, 15, 15, 0.92);
+  border-radius: inherit;
+  cursor: pointer;
+  user-select: none;
+  font-family: "Roboto", Arial, sans-serif;
+  text-align: center;
+}
+
+.ytaif-overlay:hover {
+  background: rgba(15, 15, 15, 0.97);
+}
+
+.ytaif-overlay-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  background: #3ea6ff;
+  color: #0f0f0f;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.ytaif-overlay-text {
+  color: #f1f1f1;
+  font-size: 12px;
+  line-height: 1.3;
+  max-width: 90%;
+}
+
+/* Original title/channel/metadata text stays in the DOM (preserving the
+   card's layout box) but is invisible while an overlay is active. */
+.ytaif-metadata-hidden {
+  visibility: hidden;
+}
+
+/* Community channel-blocklist badge (AiSList) — deliberately NOT a hide
+   presentation: the video stays fully visible and clickable. z-index is
+   lower than .ytaif-overlay's (5) on purpose, so if Pass 1/2 ALSO hides this
+   same card, the overlay's opaque scrim naturally covers the badge instead
+   of showing a redundant "possibly AI" label on an already-hidden video —
+   no extra logic needed to suppress that case. pointer-events: none so it
+   never intercepts a click on the underlying thumbnail/title link. Amber
+   (blocklist) / gray (warnlist) are both deliberately distinct from the
+   overlay icon's blue, so this reads as a different, lower-confidence
+   signal at a glance. */
+.ytaif-community-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100% - 8px);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 193, 7, 0.92);
+  color: #3d2e00;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.ytaif-community-badge-warn {
+  background: rgba(158, 158, 158, 0.88);
+  color: #1f1f1f;
+}
+
+.ytaif-banner {
+  position: sticky;
+  top: 0;
+  z-index: 2200;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 16px;
+  background: #fef7e0;
+  color: #664d03;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 13px;
+  text-align: center;
+  border-bottom: 1px solid #f0d478;
+}
+
+.ytaif-banner-quota {
+  background: #fce8e6;
+  color: #842029;
+  border-bottom-color: #f4b6b1;
+}
